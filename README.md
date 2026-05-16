@@ -2,9 +2,9 @@
 
 ## 🚀 Project Overview
 
-**GaitSync** is a machine learning-based project focused on analyzing human walking patterns (gait) to extract meaningful insights for healthcare and rehabilitation.
+**GaitSync** is a machine learning project for exploring human walking patterns (gait) and building baseline classifiers for gait-related signals. The repository currently contains the analysis notebooks, exported notebook HTML files, reports, presentation material, and proposal documents used for the project.
 
-The project leverages sensor or motion data to study gait characteristics and identify patterns that may indicate abnormalities or potential health conditions.
+The notebooks focus on loading marker/sensor-style gait data, preprocessing records, visualizing gait patterns, engineering features, and comparing classical machine learning classifiers.
 
 ---
 
@@ -12,65 +12,45 @@ The project leverages sensor or motion data to study gait characteristics and id
 
 Human gait analysis plays a critical role in:
 
-* Detecting neurological disorders
-* Monitoring rehabilitation progress
-* Improving assistive technologies
+* Detecting and monitoring movement-related health conditions
+* Supporting rehabilitation progress tracking
+* Improving assistive and wearable-health technologies
 
-👉 Key Question:
-**Can we use machine learning to analyze gait data and detect meaningful patterns or abnormalities?**
-
----
-
-## 🧠 Approach
-
-### 1️⃣ Data Collection & Understanding
-
-* Collected gait-related data (sensor / motion-based)
-* Includes movement patterns such as step cycles, limb motion, and timing
+**Key question:** Can machine learning models analyze gait data and detect meaningful walking-pattern differences from gait measurements?
 
 ---
 
-### 2️⃣ Data Preprocessing
+## 🧠 Analysis Workflow
 
-* Cleaned raw sensor data
-* Handled missing values
-* Normalized features for better model performance
+### 1. Data loading and preparation
 
----
+* Extract a local `gait.zip` dataset into `data/gp_dataset/`.
+* Load multiple CSV files from a gait marker dataset folder.
+* Concatenate the files into one analysis table.
 
-### 3️⃣ Exploratory Data Analysis (EDA)
+### 2. Data preprocessing
 
-* Analyzed gait distributions
-* Identified patterns across individuals
-* Compared normal vs abnormal gait behavior
+* Inspect summary statistics and schema information.
+* Prepare combined data for downstream exploratory analysis and modeling.
+* Add gait speed metadata parsed from file names.
 
----
+### 3. Exploratory data analysis
 
-### 4️⃣ Feature Engineering
+* Review gait feature distributions.
+* Compare movement patterns across observations.
+* Visualize relationships between gait variables.
 
-* Extracted gait-specific features:
+### 4. Feature engineering and modeling
 
-  * Step length
-  * Stride duration
-  * Motion variability
+* Build gait-related feature sets.
+* Train and compare baseline classifiers, including:
+  * Logistic Regression
+  * Decision Tree
+  * Random Forest
 
----
+### 5. Model evaluation
 
-### 5️⃣ Machine Learning Modeling
-
-Applied classification techniques to analyze gait patterns:
-
-* Logistic Regression
-* Decision Tree
-* Random Forest
-
-These models help classify gait patterns and identify abnormalities.
-
----
-
-### 6️⃣ Model Evaluation
-
-Evaluated model performance using:
+Model performance is assessed with common classification metrics such as:
 
 * Accuracy
 * Precision
@@ -83,100 +63,86 @@ Evaluated model performance using:
 
 * **Language:** Python
 * **Environment:** Jupyter Notebook
+* **Primary libraries:** pandas, numpy, matplotlib, seaborn, scikit-learn
 
-### 📦 Libraries Used
+Install the Python dependencies with:
 
-* **pandas** – Data manipulation
-* **numpy** – Numerical operations
-* **matplotlib / seaborn** – Data visualization
-* **scikit-learn** – Machine learning models
-
----
-
-## 📂 Dataset Information
-
-* Gait dataset (sensor / motion-based)
-* Includes:
-
-  * Movement signals
-  * Temporal gait parameters
-  * Individual-level observations
-
----
-
-## 📊 Key Insights
-
-* Gait patterns vary significantly across individuals
-* Certain features (stride, motion variability) are strong indicators of abnormal gait
-* Machine learning models can effectively classify gait conditions
-
----
-
-## 🚀 How to Run
-
-```python
-# Install dependencies
-pip install pandas numpy matplotlib seaborn scikit-learn
-
-# Load dataset
-import pandas as pd
-
-data = pd.read_csv("gait_data.csv")
-
-# Run notebook
-# Open gait_analysis.ipynb
+```bash
+pip install -r requirements.txt
 ```
 
 ---
 
-## 📁 Project Structure
+## 📂 Repository Contents
 
-```
+```text
 gaitsync-gait-analysis-ml/
-│
-├── gait_data.csv
-├── gait_analysis.ipynb
 ├── README.md
-└── images/
+├── requirements.txt
+├── gait phase analysis.ipynb
+├── gait phase analysis.html
+├── gaitphase notebook.ipynb
+├── gaitphase notebook.html
+├── GaitPhase_Desc.pdf
+├── gait phase report.pdf
+├── gait phase report.docx
+├── final report.docx
+├── research paper.docx
+├── dissertation and research paper.docx
+├── RESEARCH PRESENTATION part II.pptx
+└── supporting proposal, dataset-description, novelty, and reflective-essay documents
 ```
+
+> **Note:** The dataset archive and extracted data folder are not currently committed in this repository. The notebooks expect a local `gait.zip` file and/or an extracted marker dataset folder before all notebook cells can be executed end-to-end.
+
+---
+
+## 🚀 How to Run the Notebook
+
+1. Clone the repository.
+2. Install the dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Place the gait dataset archive at the repository root as `gait.zip`, or update the dataset path in the notebook to match your local extracted dataset location.
+4. Start Jupyter:
+
+   ```bash
+   jupyter notebook
+   ```
+
+5. Open one of the analysis notebooks:
+   * `gait phase analysis.ipynb`
+   * `gaitphase notebook.ipynb`
+
+6. Run the cells in order.
+
+---
+
+## ⚠️ Current Reproducibility Notes
+
+* The notebooks include local dataset paths such as `gait.zip` and `/mnt/data/gp_marker_dataset/gp_marker_dataset`.
+* Update those paths before running on a different machine.
+* The committed repository does not include `gait.zip`, extracted CSV files, or a `data/` folder.
+* If large datasets are added later, keep them outside Git or track them with a dedicated data-versioning workflow.
 
 ---
 
 ## 📈 Real-World Applications
 
-* Early detection of neurological disorders (e.g., Parkinson’s)
+* Early screening support for movement disorders
 * Rehabilitation monitoring
 * Sports performance analysis
-* Wearable health technology
-
-Gait analysis is widely used in healthcare systems and research for diagnosing movement disorders. ([GitHub][1])
-
----
-
-## 👨‍💻 Author
-
-**Jumma Mohammad Teli**
-📍 Birmingham, UK
-💼 Data Analyst | Machine Learning | Python
-
----
-
-## 🌟 Why This Project Stands Out
-
-* Healthcare + Machine Learning (high-impact domain)
-* Real-world application in rehabilitation and diagnosis
-* Combines data analysis with predictive modeling
-* Strong portfolio project for data science roles
+* Wearable health analytics
 
 ---
 
 ## 🔥 Future Improvements
 
-* Deep learning models (LSTM, CNN for time-series data)
-* Real-time gait detection system
-* Integration with wearable devices
-* Deployment as a healthcare analytics tool
-
----
-
-[1]: https://github.com/imabhi241/Gait_Analysis-Project?utm_source=chatgpt.com "Dynamic Analysis of human gait system through Machine ..."
+* Standardize notebook paths with configurable environment variables.
+* Add a small sample dataset for reproducible tests.
+* Convert reusable notebook logic into Python modules.
+* Add automated model-training and evaluation scripts.
+* Explore time-series/deep-learning models such as LSTM or CNN architectures.
