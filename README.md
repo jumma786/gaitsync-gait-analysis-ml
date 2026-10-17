@@ -1,148 +1,86 @@
 # 🦿 GaitSync: Gait Analysis using Machine Learning
 
+MSc dissertation, *Gait Analysis Using Machine Learning Classifiers*, MSc Internet of Things and Future Networks, Queen Mary University of London (2023–24).
+
 ## 🚀 Project Overview
 
-**GaitSync** is a machine learning project for exploring human walking patterns (gait) and building baseline classifiers for gait-related signals. The repository currently contains the analysis notebooks, exported notebook HTML files, reports, presentation material, and proposal documents used for the project.
+This project classifies walking speed from laboratory gait data recorded with **optical motion capture**. It compares eight families of machine-learning classifier on about 3 million motion-capture frames.
 
-The notebooks focus on loading marker/sensor-style gait data, preprocessing records, visualizing gait patterns, engineering features, and comparing classical machine learning classifiers.
-
----
-
-## 🎯 Problem Statement
-
-Human gait analysis plays a critical role in:
-
-* Detecting and monitoring movement-related health conditions
-* Supporting rehabilitation progress tracking
-* Improving assistive and wearable-health technologies
-
-**Key question:** Can machine learning models analyze gait data and detect meaningful walking-pattern differences from gait measurements?
+> **Important:** the data are **optical motion-capture marker trajectories** recorded in a laboratory. They are **not** wearable, gyroscope or IMU data. The repository name comes from an early project idea for a gyroscope-based rehabilitation system (see `initial_project_idea_gyroscope_NOT_USED.docx`). That idea was not carried out, and the dissertation used the public GaitPhase database instead.
 
 ---
 
-## 🧠 Analysis Workflow
+## 📊 Data: GaitPhase database (Hebenstreit et al., FAU Erlangen-Nürnberg, 2014)
 
-### 1. Data loading and preparation
+* 21 healthy young adults (10 male, 11 female; mean age 23.8 years); subject IDs GP1–GP22, with GP4 not included in the released data
+* Walking on an instrumented **split-belt treadmill** at **12 speeds** from 0.6 to 1.7 m/s (0.1 m/s steps), one minute per speed
+* **Qualisys optical motion capture** (infrared cameras) at **200 Hz**. Reflective markers on the shoes at the heel (FCC) and the 1st, 2nd and 5th metatarsal heads (FM1, FM2, FM5) of both feet give 24 coordinate columns.
+* Treadmill force plates at 1000 Hz are included in the database but were **not** used in this project; see the follow-up project below.
+* 252 marker files (21 participants × 12 speeds) × 12,000 frames = **3,024,000 frames**
 
-* Extract a local `gait.zip` dataset into `data/gp_dataset/`.
-* Load multiple CSV files from a gait marker dataset folder.
-* Concatenate the files into one analysis table.
-
-### 2. Data preprocessing
-
-* Inspect summary statistics and schema information.
-* Prepare combined data for downstream exploratory analysis and modeling.
-* Add gait speed metadata parsed from file names.
-
-### 3. Exploratory data analysis
-
-* Review gait feature distributions.
-* Compare movement patterns across observations.
-* Visualize relationships between gait variables.
-
-### 4. Feature engineering and modeling
-
-* Build gait-related feature sets.
-* Train and compare baseline classifiers, including:
-  * Logistic Regression
-  * Decision Tree
-  * Random Forest
-
-### 5. Model evaluation
-
-Model performance is assessed with common classification metrics such as:
-
-* Accuracy
-* Precision
-* Recall
-* F1-score
+The dataset is not committed to this repository. See `GaitPhase_Desc.pdf` for the original description.
 
 ---
 
-## 🛠 Tech Stack
+## 🧠 Method (as implemented in `gaitphase notebook.ipynb`)
 
-* **Language:** Python
-* **Environment:** Jupyter Notebook
-* **Primary libraries:** pandas, numpy, matplotlib, seaborn, scikit-learn
+1. Concatenate the marker files and take the speed from each file name.
+2. Mean-impute the few missing marker values.
+3. Features: 24 raw coordinates, 12 within-foot marker distances and 8 marker velocities (frame-to-frame displacement), giving 44 features.
+4. StandardScaler, then PCA keeping 95% of the variance (12 components).
+5. Label: five speed bands — Very Slow (0.6–0.8), Slow (0.9–1.0), Medium (1.1–1.2), Fast (1.3–1.5), Very Fast (1.6–1.7 m/s).
+6. Random 75/25 train/test split **by frame**.
+7. Classifiers: Random Forest, SVM (RBF kernel, trained in 10,000-row chunks), k-Nearest Neighbours, a neural network (Keras MLP), Decision Tree, Gradient Boosting, Logistic Regression (plain, L1, L2 and class-balanced) and Gaussian Naive Bayes.
 
-Install the Python dependencies with:
+## 📈 Results (test accuracy, from the notebook outputs)
 
-```bash
-pip install -r requirements.txt
-```
+| Model | Accuracy |
+|---|---|
+| Random Forest | 98.9% |
+| SVM (chunked) | 98.1% |
+| k-Nearest Neighbours | 98.1% |
+| Neural network | 96.6% |
+| Decision Tree | 93.5% |
+| Gradient Boosting | 70.6% |
+| Logistic Regression | 40–47% |
+| Gaussian Naive Bayes | 45.3% |
+
+## ⚠️ Limitations: why these accuracies are optimistic
+
+* The split was **random by frame**, so frames a few milliseconds apart from the **same person and the same walk** appear in both training and test sets. The results therefore do not show how the models perform on new people.
+* Scaling and PCA were fitted on all the data before the split.
+* Each recording has a single speed label, so models can partly learn which recording a frame belongs to.
+* All participants were healthy young adults walking on a treadmill.
+
+The correct approach is participant-level validation (leave-one-subject-out), with all preprocessing fitted inside the training folds. The follow-up project does this.
+
+## 🔁 Follow-up project
+
+**[gait-speed-predictor](https://github.com/jumma786/gait-speed-predictor)** uses the same database's **force-plate** data. It predicts walking speed (regression) with leave-one-subject-out validation across 21 folds and adds SHAP explanations. Random Forest reaches a mean absolute error of 0.057 m/s (R² 0.958), with ridge regression almost as accurate (0.058 m/s).
 
 ---
 
 ## 📂 Repository Contents
 
-```text
-gaitsync-gait-analysis-ml/
-├── README.md
-├── requirements.txt
-├── gait phase analysis.ipynb
-├── gait phase analysis.html
-├── gaitphase notebook.ipynb
-├── gaitphase notebook.html
-├── GaitPhase_Desc.pdf
-├── gait phase report.pdf
-├── gait phase report.docx
-├── final report.docx
-├── research paper.docx
-├── dissertation and research paper.docx
-├── RESEARCH PRESENTATION part II.pptx
-└── supporting proposal, dataset-description, novelty, and reflective-essay documents
+| File | What it is |
+|---|---|
+| `gaitphase notebook.ipynb` / `.html` | Main analysis notebook with outputs |
+| `gait phase analysis.ipynb` / `.html` | Earlier run of the same analysis |
+| `final report.docx`, `gait phase report.docx` / `.pdf` | Dissertation report |
+| `RESEARCH PRESENTATION part II.pptx` | Presentation |
+| `Gait Proposal.docx` | Project proposal |
+| `dataset description.docx`, `GaitPhase_Desc.pdf` | Dataset description |
+| `research paper.docx`, `novelty.docx` | Supporting write-ups |
+| `REFLECTIVE ESSAY.docx`, `reflective essay II.docx`, `gait phase reflective essay.pdf` | Reflective essays |
+| `initial_project_idea_gyroscope_NOT_USED.docx` | Early project idea (gyroscope rehabilitation system); not the data or method used |
+
+## 🛠 Tech Stack
+
+Python, Jupyter, pandas, NumPy, matplotlib, seaborn, scikit-learn and TensorFlow/Keras.
+
+```bash
+pip install -r requirements.txt
+jupyter notebook
 ```
 
-> **Note:** The dataset archive and extracted data folder are not currently committed in this repository. The notebooks expect a local `gait.zip` file and/or an extracted marker dataset folder before all notebook cells can be executed end-to-end.
-
----
-
-## 🚀 How to Run the Notebook
-
-1. Clone the repository.
-2. Install the dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Place the gait dataset archive at the repository root as `gait.zip`, or update the dataset path in the notebook to match your local extracted dataset location.
-4. Start Jupyter:
-
-   ```bash
-   jupyter notebook
-   ```
-
-5. Open one of the analysis notebooks:
-   * `gait phase analysis.ipynb`
-   * `gaitphase notebook.ipynb`
-
-6. Run the cells in order.
-
----
-
-## ⚠️ Current Reproducibility Notes
-
-* The notebooks include local dataset paths such as `gait.zip` and `/mnt/data/gp_marker_dataset/gp_marker_dataset`.
-* Update those paths before running on a different machine.
-* The committed repository does not include `gait.zip`, extracted CSV files, or a `data/` folder.
-* If large datasets are added later, keep them outside Git or track them with a dedicated data-versioning workflow.
-
----
-
-## 📈 Real-World Applications
-
-* Early screening support for movement disorders
-* Rehabilitation monitoring
-* Sports performance analysis
-* Wearable health analytics
-
----
-
-## 🔥 Future Improvements
-
-* Standardize notebook paths with configurable environment variables.
-* Add a small sample dataset for reproducible tests.
-* Convert reusable notebook logic into Python modules.
-* Add automated model-training and evaluation scripts.
-* Explore time-series/deep-learning models such as LSTM or CNN architectures.
+The notebooks expect a local `gait.zip` or an extracted GaitPhase marker folder. Update the dataset paths before running them.
